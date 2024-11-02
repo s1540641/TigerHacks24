@@ -31,3 +31,25 @@ def match_crops(season, soil_condition):
         return crops
     except KeyError:
         return "No crops available for the specified season and soil condition."
+    
+def main():
+    print("Welcome to the Crop Matcher!")
+    
+    # Get user input
+    season = input("Enter the season (cool_season, warm_season, winter_season): ").strip().lower()
+    soil_condition = input("Enter the soil condition (well-drained): ").strip().lower()
+    
+    # Match crops
+    matched_crops = match_crops(season, soil_condition)
+    
+    # Display results
+    if isinstance(matched_crops, list):
+        print("Suggested crops:")
+        for crop in matched_crops:
+            print(f"- {crop['name']} (Vitamins: {', '.join(crop['vitamins'])})")
+    else:
+        print(matched_crops)
+
+# This ensures that the main function runs when the script is executed
+if __name__ == "__main__":
+    main()
