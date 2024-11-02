@@ -22,12 +22,3 @@ backyard_crops_data = {
     },
 }
 
-def match_crops(season, soil_condition):
-    try:
-        return backyard_crops_data[season][soil_condition]
-    except KeyError:
-        return "No crops available for the specified season and soil condition."
-
-def get_suitable_crops(self, month, temperature):
-    # Placeholder function, use 'pass' until function logic is written
-    pass
