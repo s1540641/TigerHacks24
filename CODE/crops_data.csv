@@ -1,0 +1,10 @@
+season,soil_condition,name,vitamins
+cool_season,well-drained,lettuce,A,C,K
+cool_season,well-drained,spinach,A,C,K,B9
+cool_season,well-drained,carrots,A,C,K,B6
+warm_season,well-drained,okra,A,C,K
+warm_season,well-drained,eggplant,B1,B6,K
+warm_season,well-drained,peppers,A,C,E
+winter_season,well-drained,kale,A,C,K
+winter_season,well-drained,brussels sprouts,C,K,B6
+winter_season,well-drained,leeks,A,C,K
