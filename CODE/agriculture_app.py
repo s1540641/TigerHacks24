@@ -5,9 +5,10 @@ from input_handler import get_month_input
 import os
 import tkintermapview
 import requests
+import re
 
 # Define the API key at the top level
-GOOGLE_API_KEY = "AIzaSyA15taRy4gEUcA27aU0xNZu-9JgMEkXflo"
+GOOGLE_API_KEY = "AIzaSyA_RijZ476pvazOcZf1V5uriZbGyyMUQf0"
 
 class AgricultureApp:
     def __init__(self):
@@ -18,18 +19,66 @@ class AgricultureApp:
         
     def get_location_from_zip(self, zip_code):
         """Get location coordinates from zip code using Google Geocoding API"""
+        # Validate zip code format
+        if not re.match(r'^\d{5}(?:-\d{4})?$', zip_code):
+            raise ValueError("Invalid ZIP code format")
+            
         url = f"https://maps.googleapis.com/maps/api/geocode/json"
         params = {
             'address': f"{zip_code}, USA",  # Adding USA to improve accuracy
             'key': GOOGLE_API_KEY
         }
-        response = requests.get(url, params=params)
-        data = response.json()
         
-        if data['status'] == 'OK':
-            location = data['results'][0]['geometry']['location']
-            return location['lat'], location['lng']
+        try:
+            response = requests.get(url, params=params, timeout=10)  # Add timeout
+            response.raise_for_status()  # Raise exception for bad status codes
+            data = response.json()
+            
+            if data.get('status') == 'OK' and data.get('results'):
+                location = data['results'][0]['geometry']['location']
+                return location['lat'], location['lng']
+            elif data.get('status') == 'ZERO_RESULTS':
+                raise ValueError("ZIP code not found")
+            elif data.get('status') == 'REQUEST_DENIED':
+                raise ValueError("API key error")
+            else:
+                raise ValueError(f"API Error: {data.get('status')}")
+        except requests.exceptions.RequestException as e:
+            raise ValueError(f"Network error: {str(e)}")
+            
         return None, None
+        
+    def handle_search(self):
+        zip_code = self.zip_entry.get().strip()
+        if not zip_code:
+            messagebox.showwarning("Input Error", "Please enter a zip code")
+            return
+            
+        try:
+            lat, lng = self.get_location_from_zip(zip_code)
+            
+            if lat is not None and lng is not None:
+                self.current_lat = lat
+                self.current_lng = lng
+                
+                # Update map
+                self.map_widget.delete_all_marker()
+                self.map_widget.set_position(lat, lng)
+                self.map_widget.set_marker(lat, lng)
+                self.map_widget.set_zoom(12)  # Zoom in when location is found
+                
+                # Update location label
+                self.location_label.config(text=f"Selected: {zip_code}")
+                
+                # Get soil type and update suggestions
+                soil_type = self.get_soil_type(lat, lng)
+                self.update_info(soil_type)
+            else:
+                messagebox.showerror("Error", "Could not find location for this ZIP code")
+        except ValueError as e:
+            messagebox.showerror("Error", str(e))
+        except Exception as e:
+            messagebox.showerror("Error", f"An unexpected error occurred: {str(e)}")
         
     def start_ui(self):
         self.root = tk.Tk()

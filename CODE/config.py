@@ -1,5 +1,5 @@
  # Google API Configurations
-GOOGLE_API_KEY = "AIzaSyA15taRy4gEUcA27aU0xNZu-9JgMEkXflo"
+GOOGLE_API_KEY = "AIzaSyA_RijZ476pvazOcZf1V5uriZbGyyMUQf0"
     
     # API Endpoints (if needed)
 MAPS_STATIC_API = "https://maps.googleapis.com/maps/api/staticmap"
