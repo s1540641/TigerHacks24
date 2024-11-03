@@ -4,19 +4,22 @@ import webbrowser
 import folium
 from crop_database import match_crops, backyard_crops_data
 from input_handler import get_month_input
+from googleservices import GoogleServices  
 import tempfile
-GOOGLE_API_KEY = "AIzaSyA15taRy4gEUcA27aU0xNZu-9JgMEkXflo"
 import os
-GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
-class AgricultureApp: #makes the main class
+# Initialize your API key
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', "AIzaSyA15taRy4gEUcA27aU0xNZu-9JgMEkXflo")
+
+class AgricultureApp:
     def __init__(self, google_services):
-        self.google_services = google_services #handles api things
+        self.google_services = google_services
         self.root = None 
         self.map_widget = None
-        self.current_lat = None #latitude for map 
-        self.current_lng = None #longitude for map
-        self.temp_html = None  #stores the html for the map
+        self.current_lat = None
+        self.current_lng = None
+        self.temp_html = None
+    
     
     def start_ui(self): #starts Ui
         self.root = tk.Tk()
@@ -42,7 +45,8 @@ class AgricultureApp: #makes the main class
         month_dropdown.pack()
 
         #where you can enter your zip code 
-        ttk.Lable(input_frame, text="Enter Zip Code:").pack()
+        ttk.Label(input_frame, text="Enter Zip Code:").pack()
+
         self.zip_entry = ttk.Entry(input_frame)
         self.zip_entry.pack()
 
@@ -110,11 +114,13 @@ class AgricultureApp: #makes the main class
         folium.Marker([lat, lng]).add_to(m)
         m.save(self.temp_html.name)
         self.display_map()
+    def display_map(self):  # Add this method here
+        webbrowser.open(self.temp_html.name)
     def main():
-        google_services = GoogleServices('AIzaSyA15taRy4gEUcA27aU0xNZu-9JgMEkXflo') #initialize the google services key
+        google_services = GoogleServices(GOOGLE_API_KEY)
         app = AgricultureApp(google_services)
         root = app.start_ui()
         root.mainloop()
-    if __name__ == "__main__":
-        main()
 
+if __name__ == "__main__":
+    AgricultureApp.main()
